@@ -6,7 +6,7 @@ async function executarSQL(comandoSql){
         user: "root",
         password: "1234",
         port: "3307",
-        database: "dripstore"
+        database: "digital_store_db"
 
     })
 
