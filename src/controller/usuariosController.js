@@ -1,9 +1,9 @@
 const {prisma} = require("../services");
 
-async function buscarProdutos() {
+async function criarUsuario(dados) {
     try {
         
-        return await prisma.produtos.findMany();
+        return await prisma.usuarios.create();
     } catch (error) {
         return {
             tipo: "error",
@@ -11,14 +11,14 @@ async function buscarProdutos() {
         }
     }
 
-    // return await prisma.produtos.findMany();
+    // return await prisma..findMany();
     
 }
 
-async function buscarUmProduto(id) {
+async function buscarUmUsuario(id) {
     try {
 
-        return await prisma.produtos.findFirst({
+        return await prisma.usuarios.findFirst({
             where: {
                 produto_id: Number(id)
             }
@@ -33,10 +33,10 @@ async function buscarUmProduto(id) {
     
 }
 
-async function criarProduto(dados) {
+async function criarUsuario(dados) {
     try {
 
-        return await prisma.produtos.create({
+        return await prisma.usuarios.create({
             data: dados
             
         });
@@ -53,12 +53,12 @@ async function criarProduto(dados) {
     // return await executarSQL(`INSERT INTO produtos (produto_nome, produto_preco, produto_desconto, produto_imagem, marca_id, categoria_id) VALUES ('${dados.produto_nome}', ${dados.produto_preco}, ${dados.produto_desconto}, '${dados.produto_imagem}', ${dados.marca_id}, ${dados.categoria_id})`)
 }
 
-async function apagarProduto(id){
+async function apagarUsuario(id){
     try {
 
-        return await prisma.produtos.delete({
+        return await prisma.usuarios.delete({
             where : {
-                produto_id: Number(id)
+            usuario_id: Number(id)
             }
             
         });
@@ -75,10 +75,10 @@ async function apagarProduto(id){
     
 }
 
-async function editarProduto(id, dados){
+async function editarUsuario(id, dados){
     try {
-        return await prisma.produtos.update({
-            where : {produto_id: Number(id)},
+        return await prisma.usuarios.update({
+            where : {usuario_id: Number(id)},
             data: dados
             
         })
@@ -100,9 +100,5 @@ async function editarProduto(id, dados){
 // return await executarSQL(`DELETE FROM produtos WHERE produto_id = ${id}`)
 
 module.exports = {
-    buscarProdutos,
-    buscarUmProduto,
-    criarProduto,
-    apagarProduto,
-    editarProduto
+    criarUsuario
 }

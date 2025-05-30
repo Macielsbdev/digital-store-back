@@ -1,4 +1,4 @@
-const { buscarProdutos, buscarUmProduto, criarProduto, apagarProduto } = require("../controller/produtosController");
+const { buscarProdutos, buscarUmProduto, criarProduto, apagarProduto, editarProduto } = require("../controller/produtosController");
 
 
 const router = require("express").Router();
@@ -16,8 +16,8 @@ router.post("/", async (req, res) => {
 router.post("/", (req, res) => {
     res.send("Cria um usuario");
 });
-router.put("/:id", (req, res) => {
-    res.send(`Edita um usuario com o id: ${req.params.id}`);
+router.put("/:id", async (req, res) => {
+   res.send(await editarProduto(req.params.id, req.body));
 });
 router.delete("/:id", async (req, res) => {
     res.send( await apagarProduto(req.params.id));
