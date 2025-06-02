@@ -1,104 +1,130 @@
-const {prisma} = require("../services");
+const { prisma } = require("../services");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const saltRounds = 10;
 
-async function criarUsuario(dados) {
+
+async function buscarUsuarios() {
     try {
-        
-        return await prisma.usuarios.create();
+        return await prisma.usuarios.findMany();
     } catch (error) {
         return {
             tipo: "error",
             mensagem: error.message
         }
     }
-
-    // return await prisma..findMany();
-    
+    // return await executarSQL("SELECT * FROM usuarios;");
 }
 
 async function buscarUmUsuario(id) {
-    try {
 
+    try {
         return await prisma.usuarios.findFirst({
             where: {
-                produto_id: Number(id)
+                usuario_id: Number(id)
             }
         });
-
     } catch (error) {
         return {
             tipo: "error",
-            mensagem: error.m
+            mensagem: error.message
         }
     }
-    
+    // return await executarSQL(`SELECT * FROM usuarios WHERE usuario_id = ${id};`);
 }
 
 async function criarUsuario(dados) {
     try {
-
+        let senhaCriptografada = await bcrypt.hash(dados.usuario_senha, saltRounds);
+        dados = { ...dados, usuario_senha: senhaCriptografada };
         return await prisma.usuarios.create({
             data: dados
-            
         });
-
     } catch (error) {
         return {
             tipo: "error",
             mensagem: error.message
         }
     }
-
-
-
-    // return await executarSQL(`INSERT INTO produtos (produto_nome, produto_preco, produto_desconto, produto_imagem, marca_id, categoria_id) VALUES ('${dados.produto_nome}', ${dados.produto_preco}, ${dados.produto_desconto}, '${dados.produto_imagem}', ${dados.marca_id}, ${dados.categoria_id})`)
+    // return await executarSQL(`INSERT INTO usuarios (usuario_nome, usuario_preco, usuario_desconto, usuario_imagem, marca_id,categoria_id) VALUES ('${dados.usuario_nome}', ${dados.usuario_preco}, ${dados.usuario_desconto},'${dados.usuario_imagem}', ${dados.marca_id}, ${dados.categoria_id})`)
 }
 
-async function apagarUsuario(id){
+
+async function editarUsuario(id, dados) {
     try {
-
-        return await prisma.usuarios.delete({
-            where : {
-            usuario_id: Number(id)
-            }
-            
-        });
-
-    } catch (error) {
-        return {
-            tipo: "error",
-            mensagem: error.message
-        }
-    }
-
-
-
-    
-}
-
-async function editarUsuario(id, dados){
-    try {
+        let senhaCriptografada = await bcrypt.hash(dados.usuario_senha, saltRounds);
+        dados = { ...dados, usuario_senha: senhaCriptografada };
         return await prisma.usuarios.update({
-            where : {usuario_id: Number(id)},
+            where: { usuario_id: Number(id) },
             data: dados
-            
         })
+    } catch (error) {
+        return {
+            tipo: "error",
+            mensagem: error.message
+        }
 
+    }
+}
+
+async function apagarUsuario(id) {
+    // return await executarSQL(`DELETE FROM usuarios WHERE usuario_id = ${id}`)
+    try {
+        return await prisma.usuarios.delete({
+            where: {
+                usuario_id: Number(id)
+            }
+        });
     } catch (error) {
         return {
             tipo: "error",
             mensagem: error.message
         }
     }
+}
 
-
-
-    
+async function login(dados) {
+    try {
+        let usuario = await prisma.usuarios.findFirst({
+            where: {
+                usuario_email: dados.usuario_email
+            }
+        });
+        if (usuario) {
+            let senhaComparada = await bcrypt.compare(dados.usuario_senha, usuario.usuario_senha);
+            if (senhaComparada){
+                let token = jwt.sign({ data: usuario.usuario_senha}, process.env.SEGREDO, {
+                    expiresIn: '1h'});
+                return {
+                    tipo: "success",
+                    mensagem: "Usuario logado!",
+                    token
+                }
+            }
+        }
+        return {
+            tipo: "warning",
+            mensagem: "usuário ou senha incorretos"
+        }
+    } catch (error) {
+        return {
+            tipo: "error",
+            mensagem: error.message
+        }
+    }
 }
 
 
 
-// return await executarSQL(`DELETE FROM produtos WHERE produto_id = ${id}`)
+
+
+
 
 module.exports = {
-    criarUsuario
+    buscarUsuarios,
+    buscarUmUsuario,
+    criarUsuario,
+    apagarUsuario,
+    editarUsuario,
+    login
 }

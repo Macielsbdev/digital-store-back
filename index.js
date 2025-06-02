@@ -4,6 +4,8 @@ const port = 8000;
 
 const usuariosRoutes = require("./src/routes/usuariosRoutes");
 const produtosRoutes = require("./src/routes/produtosRoutes");
+const { login } = require("./src/controller/usuariosController");
+const { rotaProtegida } = require("./src/utils");
 
 app.use(express.json());
 
@@ -11,8 +13,13 @@ app.get("/", (req, res) => {
     res.send("Olá Mundo");
 });
 
-app.use("/usuarios", usuariosRoutes);
-app.use("/produtos", produtosRoutes);
+app.post("/login", async (req, res) =>{
+    res.send(await login(req.body));
+});
+
+
+app.use("/usuarios", rotaProtegida, usuariosRoutes);
+app.use("/produtos", rotaProtegida, produtosRoutes);
 
 app.use((req, res) => {
     res.status(404).send("Rota Não Encontrada");
