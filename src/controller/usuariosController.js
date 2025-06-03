@@ -90,6 +90,7 @@ async function login(dados) {
                 usuario_email: dados.usuario_email
             }
         });
+        
         if (usuario) {
             let senhaComparada = await bcrypt.compare(dados.usuario_senha, usuario.usuario_senha);
             if (senhaComparada){
