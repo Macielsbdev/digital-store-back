@@ -99,6 +99,7 @@ async function login(dados) {
                 return {
                     tipo: "success",
                     mensagem: "Usuario logado!",
+                    usuario,
                     token
                 }
             }
