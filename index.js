@@ -21,7 +21,7 @@ app.post("/login", async (req, res) =>{
 
 
 app.use("/usuarios", rotaProtegida, usuariosRoutes);
-app.use("/produtos", rotaProtegida, produtosRoutes);
+app.use("/produtos", produtosRoutes);
 
 app.use((req, res) => {
     res.status(404).send("Rota Não Encontrada");
